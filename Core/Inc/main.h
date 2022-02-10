@@ -60,6 +60,10 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define LD_G_Pin GPIO_PIN_8
 #define LD_G_GPIO_Port GPIOE
+#define XBee_ATTN_Pin GPIO_PIN_10
+#define XBee_ATTN_GPIO_Port GPIOE
+#define XBee_SSEL_SPI1_Pin GPIO_PIN_12
+#define XBee_SSEL_SPI1_GPIO_Port GPIOE
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

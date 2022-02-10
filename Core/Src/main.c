@@ -258,7 +258,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, LD_G_Pin|GPIO_PIN_10|GPIO_PIN_12, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, LD_G_Pin|XBee_SSEL_SPI1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LD_G_Pin */
   GPIO_InitStruct.Pin = LD_G_Pin;
@@ -267,18 +267,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(LD_G_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PE10 PE12 */
-  GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_12;
+  /*Configure GPIO pin : XBee_ATTN_Pin */
+  GPIO_InitStruct.Pin = XBee_ATTN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(XBee_ATTN_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : XBee_SSEL_SPI1_Pin */
+  GPIO_InitStruct.Pin = XBee_SSEL_SPI1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PE11 */
-  GPIO_InitStruct.Pin = GPIO_PIN_11;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+  HAL_GPIO_Init(XBee_SSEL_SPI1_GPIO_Port, &GPIO_InitStruct);
 
 }
 
