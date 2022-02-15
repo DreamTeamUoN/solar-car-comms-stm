@@ -102,14 +102,18 @@ int main(void)
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
 
+  uint8_t uart_test_data = 1;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_UART_Transmit(&huart4, &uart_test_data, 1, HAL_MAX_DELAY);
 	  HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
 	  HAL_Delay(100);
+	  ++uart_test_data;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -304,7 +308,7 @@ static void MX_UART4_Init(void)
 
   /* USER CODE END UART4_Init 1 */
   huart4.Instance = UART4;
-  huart4.Init.BaudRate = 115200;
+  huart4.Init.BaudRate = 9600;
   huart4.Init.WordLength = UART_WORDLENGTH_8B;
   huart4.Init.StopBits = UART_STOPBITS_1;
   huart4.Init.Parity = UART_PARITY_NONE;
