@@ -22,6 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "util.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -112,8 +114,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_UART_Transmit(&huart1, &uart_test_data, 1, HAL_MAX_DELAY);
-	  HAL_UART_Transmit(&huart2, &uart_test_data, 1, HAL_MAX_DELAY);
+	  io_printf(OUT_XBee, "Hello\n");
+	  io_printf(OUT_XBee, "%d\n", uart_test_data);
+	  io_printf(OUT_USB, "Hello\n");
+	  io_printf(OUT_USB, "%d\n", uart_test_data);
 	  HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
 	  HAL_Delay(100);
     /* USER CODE END WHILE */
