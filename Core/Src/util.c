@@ -6,7 +6,7 @@
 #include "util.h"
 
 void io_printf(OutputDevice out, const char *format, ...) {
-	va_list arguments;
+	va_list args;
 
 	/* Initalize arguments to store all values after format */
 	va_start(args, format);

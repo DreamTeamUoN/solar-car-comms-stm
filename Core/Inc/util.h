@@ -7,6 +7,6 @@ typedef enum {
 	OUT_GPS
 } OutputDevice;
 
-void io_printf(OutputDevice out, char *format, ...);
+void io_printf(OutputDevice out, const char *format, ...);
 
 #endif /* INC_UTIL_H_ */
