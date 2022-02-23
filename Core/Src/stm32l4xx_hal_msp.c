@@ -290,19 +290,19 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
     PC12     ------> SPI3_MOSI
     PB4 (NJTRST)     ------> SPI3_MISO
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_12;
+    GPIO_InitStruct.Pin = GPS_SCK_SPI3_Pin|GPS_MOSI_SPI__Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = GPIO_PIN_4;
+    GPIO_InitStruct.Pin = GPS_MISO_SPI3_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPS_MISO_SPI3_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN SPI3_MspInit 1 */
 
@@ -355,9 +355,9 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
     PC12     ------> SPI3_MOSI
     PB4 (NJTRST)     ------> SPI3_MISO
     */
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_10|GPIO_PIN_12);
+    HAL_GPIO_DeInit(GPIOC, GPS_SCK_SPI3_Pin|GPS_MOSI_SPI__Pin);
 
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_4);
+    HAL_GPIO_DeInit(GPS_MISO_SPI3_GPIO_Port, GPS_MISO_SPI3_Pin);
 
   /* USER CODE BEGIN SPI3_MspDeInit 1 */
 

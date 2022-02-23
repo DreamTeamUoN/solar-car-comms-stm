@@ -111,6 +111,13 @@ int main(void)
 
   uint8_t uart_test_data = 1;
 
+  // Selects the GPS chip select to high for the chip NOT to be selected as a default
+  HAL_GPIO_WritePin(GPS_SSEL_SPI3_Pin, GPIO_PIN_15, GPIO_PIN_SET);
+
+  // not sure if we need yet
+  char spi_buf[20];
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -127,6 +134,15 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  ++uart_test_data;
+
+	  // Sets the GPS Chip select to low to activate it
+	  HAL_GPIO_WritePin(GPS_SSEL_SPI3_GPIO_Port, GPS_SSEL_SPI3_Pin, GPIO_PIN_RESET);
+	  HAL_SPI_Receive(&hspi3, (uint8_t *)spi_buf, 20, 100);
+	  HAL_GPIO_WritePin(GPS_SSEL_SPI3_GPIO_Port, GPS_SSEL_SPI3_Pin, GPIO_PIN_SET);
+	  HAL_UART_Transmit(&huart1, (uint8_t *)spi_buf, 20, 100);
+
+
+
   }
   /* USER CODE END 3 */
 }

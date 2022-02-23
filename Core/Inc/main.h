@@ -76,8 +76,14 @@ void Error_Handler(void);
 #define TCK_GPIO_Port GPIOA
 #define GPS_SSEL_SPI3_Pin GPIO_PIN_15
 #define GPS_SSEL_SPI3_GPIO_Port GPIOA
+#define GPS_SCK_SPI3_Pin GPIO_PIN_10
+#define GPS_SCK_SPI3_GPIO_Port GPIOC
+#define GPS_MOSI_SPI__Pin GPIO_PIN_12
+#define GPS_MOSI_SPI__GPIO_Port GPIOC
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
+#define GPS_MISO_SPI3_Pin GPIO_PIN_4
+#define GPS_MISO_SPI3_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
