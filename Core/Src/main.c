@@ -53,6 +53,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+CAN_FilterTypeDef canfilterconfig;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -111,6 +113,8 @@ int main(void)
 
   uint8_t uart_test_data = 1;
 
+  HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -121,8 +125,16 @@ int main(void)
 	  io_printf(OUT_XBee, "%d\n", uart_test_data);
 	  io_printf(OUT_USB, "Hello\n");
 	  io_printf(OUT_USB, "%d\n", uart_test_data);
+//	  io_printf(OUT_CAN, "Hello\n");
+//	  io_printf(OUT_CAN, "%d\n", uart_test_data);
 	  HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
 	  HAL_Delay(100);
+	  HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
+	  HAL_Delay(100);
+
+	  io_printf(OUT_USB, "FIFO0: %d\n", HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0));
+	  io_printf(OUT_USB, "FIFO1: %d\n", HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO1));
+	  io_printf(OUT_USB, "Status: %d\n", HAL_CAN_GetState(&hcan1));
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -194,11 +206,11 @@ static void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 16;
+  hcan1.Init.Prescaler = 125;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_1TQ;
-  hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
+  hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = DISABLE;
   hcan1.Init.AutoWakeUp = DISABLE;
@@ -211,6 +223,29 @@ static void MX_CAN1_Init(void)
   }
   /* USER CODE BEGIN CAN1_Init 2 */
 
+    canfilterconfig.FilterActivation = CAN_FILTER_ENABLE;
+    canfilterconfig.FilterBank = 0;
+    canfilterconfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+    canfilterconfig.FilterIdHigh = 0;
+    canfilterconfig.FilterIdLow = 0;
+    canfilterconfig.FilterMaskIdHigh = 0;
+    canfilterconfig.FilterMaskIdLow = 0;
+    canfilterconfig.FilterMode = CAN_FILTERMODE_IDMASK;
+    canfilterconfig.FilterScale = CAN_FILTERSCALE_32BIT;
+    canfilterconfig.SlaveStartFilterBank = 1;
+
+    if (HAL_CAN_ConfigFilter(&hcan1, &canfilterconfig) != HAL_OK)
+	{
+	  Error_Handler();
+	}
+
+    HAL_GPIO_WritePin(CAN1_MCP_STBY_GPIO_Port, CAN1_MCP_STBY_Pin, GPIO_PIN_RESET); // Set STBY Low (Normal Mode)
+
+    HAL_CAN_Start(&hcan1);
+    if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+    {
+  	  Error_Handler();
+    }
   /* USER CODE END CAN1_Init 2 */
 
 }
@@ -427,7 +462,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LD_G_Pin|GPS_SSEL_SPI3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, CAN1_MCP_STBY_Pin|LD_G_Pin|GPS_SSEL_SPI3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(XBee_SSEL_SPI2_GPIO_Port, XBee_SSEL_SPI2_Pin, GPIO_PIN_RESET);
@@ -438,8 +473,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LD_G_Pin GPS_SSEL_SPI3_Pin */
-  GPIO_InitStruct.Pin = LD_G_Pin|GPS_SSEL_SPI3_Pin;
+  /*Configure GPIO pins : CAN1_MCP_STBY_Pin LD_G_Pin GPS_SSEL_SPI3_Pin */
+  GPIO_InitStruct.Pin = CAN1_MCP_STBY_Pin|LD_G_Pin|GPS_SSEL_SPI3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

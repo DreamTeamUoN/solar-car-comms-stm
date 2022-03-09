@@ -22,6 +22,7 @@
 #include "stm32l4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "util.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -208,7 +209,7 @@ void SysTick_Handler(void)
 void CAN1_RX0_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN1_RX0_IRQn 0 */
-
+	io_printf(OUT_USB, "Receiving CAN0 RX0 Old\r\n");
   /* USER CODE END CAN1_RX0_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan1);
   /* USER CODE BEGIN CAN1_RX0_IRQn 1 */
@@ -222,7 +223,7 @@ void CAN1_RX0_IRQHandler(void)
 void CAN1_RX1_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN1_RX1_IRQn 0 */
-
+	io_printf(OUT_USB, "Receiving CAN0 RX1 Old\r\n");
   /* USER CODE END CAN1_RX1_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan1);
   /* USER CODE BEGIN CAN1_RX1_IRQn 1 */
@@ -287,6 +288,18 @@ void USART2_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+	io_printf(OUT_USB, "Receiving CAN0\r\n");
+
+	CAN_RxHeaderTypeDef pRxHeader;
+	uint8_t receivedData[100];
+
+	HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &pRxHeader, receivedData);
+
+	io_printf(OUT_USB, "%s", receivedData);
+}
 
 /* USER CODE END 1 */
 
