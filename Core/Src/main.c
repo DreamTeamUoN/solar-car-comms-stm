@@ -241,7 +241,11 @@ static void MX_CAN1_Init(void)
 
     HAL_GPIO_WritePin(CAN1_MCP_STBY_GPIO_Port, CAN1_MCP_STBY_Pin, GPIO_PIN_RESET); // Set STBY Low (Normal Mode)
 
-    HAL_CAN_Start(&hcan1);
+    if (HAL_CAN_Start(&hcan1) != HAL_OK)
+	{
+	  Error_Handler();
+	}
+
     if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
     {
   	  Error_Handler();
