@@ -226,13 +226,13 @@ static void MX_CAN1_Init(void)
     canfilterconfig.FilterActivation = CAN_FILTER_ENABLE;
     canfilterconfig.FilterBank = 0;
     canfilterconfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
-    canfilterconfig.FilterIdHigh = 0;
-    canfilterconfig.FilterIdLow = 0;
-    canfilterconfig.FilterMaskIdHigh = 0;
-    canfilterconfig.FilterMaskIdLow = 0;
+    canfilterconfig.FilterIdHigh = 0x0000;
+    canfilterconfig.FilterIdLow = 0x0000;
+    canfilterconfig.FilterMaskIdHigh = 0x0000;
+    canfilterconfig.FilterMaskIdLow = 0x0000;
     canfilterconfig.FilterMode = CAN_FILTERMODE_IDMASK;
     canfilterconfig.FilterScale = CAN_FILTERSCALE_32BIT;
-    canfilterconfig.SlaveStartFilterBank = 1;
+    canfilterconfig.SlaveStartFilterBank = 20;
 
     if (HAL_CAN_ConfigFilter(&hcan1, &canfilterconfig) != HAL_OK)
 	{
