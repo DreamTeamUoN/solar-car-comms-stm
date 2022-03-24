@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include <string.h>
 #include "util.h"
 
 /* USER CODE END Includes */
@@ -33,6 +34,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define RxDMABuf_SIZE	10
+#define RxBuf_SIZE		10
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -50,10 +53,13 @@ SPI_HandleTypeDef hspi3;
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart1_rx;
 
 /* USER CODE BEGIN PV */
 
 CAN_FilterTypeDef canfilterconfig;
+uint8_t uartRxDMABuf[RxDMABuf_SIZE];
+uint8_t uartRxBuf[RxBuf_SIZE];
 
 /* USER CODE END PV */
 
@@ -65,6 +71,7 @@ static void MX_CAN1_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_DMA_Init(void);
 static void MX_SPI3_Init(void);
 /* USER CODE BEGIN PFP */
 
@@ -72,6 +79,16 @@ static void MX_SPI3_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
+	if(huart->Instance == USART1){
+//		memcpy(uartRxBuf, uartRxDMABuf, Size);
+
+		io_printf(OUT_XBee, "Received with Idle! %s", uartRxBuf);
+
+		HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uartRxBuf, RxBuf_SIZE);
+	}
+}
 
 /* USER CODE END 0 */
 
@@ -107,6 +124,7 @@ int main(void)
   MX_CAN1_Init();
   MX_I2C1_Init();
   MX_SPI2_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
@@ -115,13 +133,14 @@ int main(void)
 
   HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
 
+  char dataPointer[100];
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uartRxBuf, RxBuf_SIZE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 //  io_printf(OUT_XBee, "%s\n", encodeSpeed(uart_test_data));
 //  io_printf(OUT_USB, "%s\n", encodeSpeed(uart_test_data));
-  char dataPointer[100];
   while (1)
   {
 	  encodeSpeed(uart_test_data, dataPointer, 100);
@@ -451,6 +470,22 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
 }
 
