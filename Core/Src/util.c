@@ -4,6 +4,7 @@
 
 #include "main.h"
 #include "util.h"
+#include "cJSON.h"
 
 void io_printf(OutputDevice out, const char *format, ...) {
 	va_list args;
@@ -49,4 +50,30 @@ void CAN_Transmit(uint8_t * buffer, size_t len) {
 
 	while(HAL_CAN_IsTxMessagePending(&hcan1, TxMailbox));
 	io_printf(OUT_USB, "Successfully transmitted CAN\r\n");
+}
+
+char* encodeSpeed (const int32_t speed, char * const buffer, int size){
+	cJSON *speedObject = cJSON_CreateObject();
+	if (speedObject == NULL)
+	{
+		goto end;
+	}
+
+	cJSON *value = cJSON_CreateNumber(speed);
+	if (speedObject == NULL)
+	{
+		goto end;
+	}
+
+	cJSON_AddItemToObject(speedObject, "speed", value);
+
+	char *jsonString = cJSON_PrintPreallocated(speedObject, buffer, size, (cJSON_bool)0);
+	if (jsonString == NULL)
+	{
+		fprintf(stderr, "Failed to print speed.\n");
+	}
+
+end:
+	cJSON_Delete(speedObject);
+	return jsonString;
 }

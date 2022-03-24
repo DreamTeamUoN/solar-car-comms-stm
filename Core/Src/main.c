@@ -111,7 +111,7 @@ int main(void)
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
 
-  uint8_t uart_test_data = 1;
+  int32_t uart_test_data = 1;
 
   HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
 
@@ -119,18 +119,22 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+//  io_printf(OUT_XBee, "%s\n", encodeSpeed(uart_test_data));
+//  io_printf(OUT_USB, "%s\n", encodeSpeed(uart_test_data));
+  char dataPointer[100];
   while (1)
   {
-	  io_printf(OUT_XBee, "Hello\n");
-	  io_printf(OUT_XBee, "%d\n", uart_test_data);
-	  io_printf(OUT_USB, "Hello\n");
-	  io_printf(OUT_USB, "%d\n", uart_test_data);
+	  encodeSpeed(uart_test_data, dataPointer, 100);
+
+	  io_printf(OUT_XBee, "%s\n", dataPointer);
+	  io_printf(OUT_USB, "%s\n", dataPointer);
 //	  io_printf(OUT_CAN, "Hello\n");
 //	  io_printf(OUT_CAN, "%d\n", uart_test_data);
+
 	  HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
-	  HAL_Delay(100);
+	  HAL_Delay(50);
 	  HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
-	  HAL_Delay(100);
+	  HAL_Delay(50);
 
 	  io_printf(OUT_USB, "FIFO0: %d\n", HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0));
 	  io_printf(OUT_USB, "FIFO1: %d\n", HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO1));
@@ -396,7 +400,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 9600;
+  huart1.Init.BaudRate = 115200;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
