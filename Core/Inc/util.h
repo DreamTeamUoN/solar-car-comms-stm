@@ -11,5 +11,6 @@ typedef enum {
 void io_printf(OutputDevice out, const char *format, ...);
 void CAN_Transmit(uint8_t * buffer, size_t len);
 void encodeSpeed (const int32_t speed, char * const buffer, int size);
+int32_t decodeSpeed(const char * const json);
 
 #endif /* INC_UTIL_H_ */

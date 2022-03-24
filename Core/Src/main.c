@@ -34,8 +34,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define RxDMABuf_SIZE	10
-#define RxBuf_SIZE		10
+#define RxDMABuf_SIZE	100
+#define RxBuf_SIZE		100
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -84,9 +84,10 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
 	if(huart->Instance == USART1){
 //		memcpy(uartRxBuf, uartRxDMABuf, Size);
 
-		io_printf(OUT_XBee, "Received with Idle! %s", uartRxBuf);
+		io_printf(OUT_USB, "Received with Idle! %s, %d", uartRxBuf, decodeSpeed(uartRxBuf));
 
 		HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uartRxBuf, RxBuf_SIZE);
+		__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 	}
 }
 
@@ -135,6 +136,7 @@ int main(void)
 
   char dataPointer[100];
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uartRxBuf, RxBuf_SIZE);
+  __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
   /* USER CODE END 2 */
 
   /* Infinite loop */

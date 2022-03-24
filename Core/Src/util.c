@@ -75,3 +75,13 @@ void encodeSpeed (const int32_t speed, char * const buffer, int size){
 end:
 	cJSON_Delete(speedObject);
 }
+
+int32_t decodeSpeed(const char * const json) {
+	int32_t speed = 0;
+	cJSON *speedObject_json = cJSON_Parse(json);
+	const cJSON *value = cJSON_GetObjectItemCaseSensitive(speedObject_json, "target");
+	speed = value->valueint;
+
+	cJSON_Delete(speedObject_json);
+	return speed;
+}

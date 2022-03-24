@@ -59,6 +59,7 @@
 extern CAN_HandleTypeDef hcan1;
 extern I2C_HandleTypeDef hi2c1;
 extern SPI_HandleTypeDef hspi2;
+extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
