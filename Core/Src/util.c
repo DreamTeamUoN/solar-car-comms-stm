@@ -52,7 +52,7 @@ void CAN_Transmit(uint8_t * buffer, size_t len) {
 	io_printf(OUT_USB, "Successfully transmitted CAN\r\n");
 }
 
-char* encodeSpeed (const int32_t speed, char * const buffer, int size){
+void encodeSpeed (const int32_t speed, char * const buffer, int size){
 	cJSON *speedObject = cJSON_CreateObject();
 	if (speedObject == NULL)
 	{
@@ -67,13 +67,11 @@ char* encodeSpeed (const int32_t speed, char * const buffer, int size){
 
 	cJSON_AddItemToObject(speedObject, "speed", value);
 
-	char *jsonString = cJSON_PrintPreallocated(speedObject, buffer, size, (cJSON_bool)0);
-	if (jsonString == NULL)
+	if (!cJSON_PrintPreallocated(speedObject, buffer, size, (cJSON_bool)0))
 	{
 		fprintf(stderr, "Failed to print speed.\n");
 	}
 
 end:
 	cJSON_Delete(speedObject);
-	return jsonString;
 }

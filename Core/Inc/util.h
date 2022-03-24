@@ -10,6 +10,6 @@ typedef enum {
 
 void io_printf(OutputDevice out, const char *format, ...);
 void CAN_Transmit(uint8_t * buffer, size_t len);
-char* encodeSpeed (const int32_t speed, char * const buffer, int size);
+void encodeSpeed (const int32_t speed, char * const buffer, int size);
 
 #endif /* INC_UTIL_H_ */
