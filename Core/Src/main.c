@@ -227,6 +227,8 @@ static void MX_FDCAN1_Init(void)
   sFilterConfig.FilterID1 = 0x244;  // ID Filter
   sFilterConfig.FilterID2 = 0x0000; // Mask
 
+  if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig) != HAL_OK)
+  {
     Error_Handler();
   }
 
@@ -234,20 +236,19 @@ static void MX_FDCAN1_Init(void)
    Filter all remote frames with STD and EXT ID
    Accept non matching frames with STD ID and EXT ID */
   if (HAL_FDCAN_ConfigGlobalFilter(&hfdcan1, FDCAN_ACCEPT_IN_RX_FIFO0,
-  FDCAN_ACCEPT_IN_RX_FIFO0,
-                                   FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE)
-      != HAL_OK) {
+      FDCAN_ACCEPT_IN_RX_FIFO0, FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE) != HAL_OK)
+  {
     Error_Handler();
   }
 
   /* Start the FDCAN module */
   if (HAL_FDCAN_Start(&hfdcan1) != HAL_OK)
+  {
     Error_Handler();
   }
 
   /* Enable callback on new message in RX FIFO0 */
   if (HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0)
-      != HAL_OK) {
       != HAL_OK)
   {
     Error_Handler();
