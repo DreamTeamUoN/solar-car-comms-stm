@@ -163,7 +163,7 @@ void DMA1_Channel1_IRQHandler(void)
 void TIM16_FDCAN_IT0_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM16_FDCAN_IT0_IRQn 0 */
-	io_printf(OUT_USB, "FDCAN0_IT0 IRQ\n");
+
   /* USER CODE END TIM16_FDCAN_IT0_IRQn 0 */
   HAL_FDCAN_IRQHandler(&hfdcan1);
   /* USER CODE BEGIN TIM16_FDCAN_IT0_IRQn 1 */
@@ -197,20 +197,17 @@ void USART1_IRQHandler(void)
   */
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
-  io_printf(OUT_USB, "FDCAN_RxFifo0\n");
-
   FDCAN_RxHeaderTypeDef pRxHeader;
   uint8_t receivedData[100];
 
   if ((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != RESET) {
-    io_printf(OUT_USB, "New Message\n");
-
     /* Retrieve Rx messages from RX FIFO0 */
     if (HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &pRxHeader, receivedData)
         != HAL_OK) {
       Error_Handler();
     }
-
+    // Ensure string is terminated
+    receivedData[pRxHeader.DataLength>>16] = '\0';
     io_printf(OUT_USB, "%s", receivedData);
   }
 }

@@ -73,7 +73,7 @@ void Error_Handler(void);
 #define CAN1_MCP_STBY_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
 #define RxDMABuf_SIZE 100
-#define JSON_BUFFER_SIZE 120
+#define JSON_BUFFER_SIZE 200
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

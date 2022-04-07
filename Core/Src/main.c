@@ -120,7 +120,7 @@ int main(void)
   while (1)
   {
     // Place JSON data in buffer
-    encodeSpeed(jsonBuffer, JSON_BUFFER_SIZE, 70, 95, latitude, 133.75981);
+    encodeData(jsonBuffer, JSON_BUFFER_SIZE, 70, 95, latitude, 133.75981);
 
     // TODO Make all transmission non-blocking
     // TODO Add parity to uart1

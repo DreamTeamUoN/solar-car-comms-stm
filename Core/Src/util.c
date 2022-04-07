@@ -43,7 +43,6 @@ void io_printf(OutputDevice out, const char *format, ...)
 
 void CAN_Transmit(uint8_t *pTxData, size_t len)
 {
-  io_printf(OUT_USB, "Transmitting CAN\r\n");
   FDCAN_TxHeaderTypeDef pTxHeader; //declare a specific header for message transmissions
 
   pTxHeader.IdType = FDCAN_STANDARD_ID; //set identifier to standard
@@ -61,9 +60,7 @@ void CAN_Transmit(uint8_t *pTxData, size_t len)
     Error_Handler();
   }
 
-  while (HAL_FDCAN_IsTxBufferMessagePending(&hfdcan1, 0))
-    ;
-  io_printf(OUT_USB, "Successfully transmitted CAN\r\n");
+  while (HAL_FDCAN_IsTxBufferMessagePending(&hfdcan1, 0));
 }
 
 uint8_t addNumberToJSON(cJSON *parentObject, const char *name, double value)
@@ -77,7 +74,7 @@ uint8_t addNumberToJSON(cJSON *parentObject, const char *name, double value)
   return 0;
 }
 
-void encodeSpeed(char *const buffer, size_t size, const int32_t speed,
+void encodeData(char *const buffer, size_t size, const int32_t speed,
     const int32_t state_of_charge, const double latitude, const double longitude)
 {
   // Create JSON Object
