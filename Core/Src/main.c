@@ -48,7 +48,7 @@ DMA_HandleTypeDef hdma_usart1_rx;
 /* USER CODE BEGIN PV */
 
 uint32_t uart_test_data = 1;
-char dataPointer[100];
+char jsonBuffer[JSON_BUFFER_SIZE];
 uint8_t uartRxDMABuf[RxDMABuf_SIZE];
 
 /* USER CODE END PV */
@@ -117,12 +117,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1) {
     // Place JSON data in buffer
-    encodeSpeed(uart_test_data, dataPointer, 100);
+    encodeSpeed(jsonBuffer, JSON_BUFFER_SIZE, 70, 95, -23.20699, 133.75981);
 
     // TODO Make all transmission non-blocking
     // Transmit JSON data
-    io_printf(OUT_XBee, "%s\n", dataPointer);
-    io_printf(OUT_USB, "%s\n", dataPointer);
+    io_printf(OUT_XBee, "%s\n", jsonBuffer);
+    io_printf(OUT_USB, "%s\n", jsonBuffer);
 
     // Transmit test data on CAN
     io_printf(OUT_CAN, "C\n");

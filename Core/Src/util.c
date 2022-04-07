@@ -61,34 +61,58 @@ void CAN_Transmit(uint8_t * pTxData, size_t len) {
   io_printf(OUT_USB, "Successfully transmitted CAN\r\n");
 }
 
-void encodeSpeed (const int32_t speed, char * const buffer, int size){
-  cJSON *speedObject = cJSON_CreateObject();
-  if (speedObject == NULL)
-  {
+uint8_t addNumberToJSON(cJSON *parentObject, const char *name, double value) {
+  cJSON *item = cJSON_CreateNumber(value);
+  if (item == NULL) {
+    return 1;
+  }
+  cJSON_AddItemToObject(parentObject, name, item);
+  return 0;
+}
+
+void encodeSpeed(char *const buffer, size_t size, const int32_t speed,
+    const int32_t state_of_charge, const double latitude,
+    const double longitude) {
+  // Create JSON Object
+  cJSON *dataObject = cJSON_CreateObject();
+  if (dataObject == NULL) {
     goto end;
   }
 
-  cJSON *value = cJSON_CreateNumber(speed);
-  if (speedObject == NULL)
-  {
+  // Add speed
+  if (addNumberToJSON(dataObject, "speed", speed)) {
     goto end;
   }
 
-  cJSON_AddItemToObject(speedObject, "speed", value);
+  // Add test
+  if (addNumberToJSON(dataObject, "state_of_charge", state_of_charge)) {
+    goto end;
+  }
 
-  if (!cJSON_PrintPreallocated(speedObject, buffer, size, (cJSON_bool)0))
-  {
+  // Add latitude
+  if (addNumberToJSON(dataObject, "latitude", latitude)) {
+    goto end;
+  }
+
+  // Add longitude
+  if (addNumberToJSON(dataObject, "longitude", longitude)) {
+    goto end;
+  }
+
+  // Print to string
+  if (!cJSON_PrintPreallocated(dataObject, buffer, size, (cJSON_bool) 0)) {
     fprintf(stderr, "Failed to print speed.\n");
   }
 
-end:
-  cJSON_Delete(speedObject);
+  // Delete object
+  end: cJSON_Delete(dataObject);
 }
 
 int32_t decodeSpeed(const char * const json) {
   int32_t speed = 0;
   cJSON *speedObject_json = cJSON_Parse(json);
-  const cJSON *value = cJSON_GetObjectItemCaseSensitive(speedObject_json, "target");
+  const cJSON *value = cJSON_GetObjectItemCaseSensitive(speedObject_json,
+                                                        "target");
   speed = value->valueint;
 
   cJSON_Delete(speedObject_json);
