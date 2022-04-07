@@ -94,7 +94,7 @@ void encodeSpeed(char *const buffer, size_t size, const int32_t speed,
   }
 
   // Add test
-  if (addNumberToJSON(dataObject, "state_of_charge", state_of_charge))
+  if (addNumberToJSON(dataObject, "SoC", state_of_charge))
   {
     goto end;
   }
