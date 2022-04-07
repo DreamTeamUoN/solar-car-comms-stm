@@ -51,6 +51,8 @@ uint32_t uart_test_data = 1;
 char jsonBuffer[JSON_BUFFER_SIZE];
 uint8_t uartRxDMABuf[RxDMABuf_SIZE];
 
+double latitude = -21.37976;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -118,9 +120,10 @@ int main(void)
   while (1)
   {
     // Place JSON data in buffer
-    encodeSpeed(jsonBuffer, JSON_BUFFER_SIZE, 70, 95, -23.20699, 133.75981);
+    encodeSpeed(jsonBuffer, JSON_BUFFER_SIZE, 70, 95, latitude, 133.75981);
 
     // TODO Make all transmission non-blocking
+    // TODO Add parity to uart1
     // Transmit JSON data
     io_printf(OUT_XBee, "%s\n", jsonBuffer);
     io_printf(OUT_USB, "%s\n", jsonBuffer);
@@ -137,6 +140,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     ++uart_test_data;
+    latitude -= 0.00001;
   }
   /* USER CODE END 3 */
 }
