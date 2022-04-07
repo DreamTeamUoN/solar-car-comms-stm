@@ -115,7 +115,8 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1) {
+  while (1)
+  {
     // Place JSON data in buffer
     encodeSpeed(jsonBuffer, JSON_BUFFER_SIZE, 70, 95, -23.20699, 133.75981);
 
@@ -226,7 +227,6 @@ static void MX_FDCAN1_Init(void)
   sFilterConfig.FilterID1 = 0x244;  // ID Filter
   sFilterConfig.FilterID2 = 0x0000; // Mask
 
-  if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig) != HAL_OK) {
     Error_Handler();
   }
 
@@ -241,13 +241,15 @@ static void MX_FDCAN1_Init(void)
   }
 
   /* Start the FDCAN module */
-  if (HAL_FDCAN_Start(&hfdcan1) != HAL_OK) {
+  if (HAL_FDCAN_Start(&hfdcan1) != HAL_OK)
     Error_Handler();
   }
 
   /* Enable callback on new message in RX FIFO0 */
   if (HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0)
       != HAL_OK) {
+      != HAL_OK)
+  {
     Error_Handler();
   }
   /* USER CODE END FDCAN1_Init 2 */
