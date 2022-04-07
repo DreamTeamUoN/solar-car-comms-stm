@@ -63,8 +63,7 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
-extern uint8_t uartRxDMABuf[RxDMABuf_SIZE];
-extern uint8_t uartRxBuf[RxBuf_SIZE];
+
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -301,17 +300,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &pRxHeader, receivedData);
 
 	io_printf(OUT_USB, "%s", receivedData);
-}
-
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
-	if(huart->Instance == USART1){
-//		memcpy(uartRxBuf, uartRxDMABuf, Size);
-
-		io_printf(OUT_USB, "Received with Idle! %s, %d", uartRxBuf, decodeSpeed((char *)uartRxBuf));
-
-		HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uartRxBuf, RxBuf_SIZE);
-		__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
-	}
 }
 
 /* USER CODE END 1 */
