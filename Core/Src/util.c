@@ -11,7 +11,7 @@ extern FDCAN_HandleTypeDef hfdcan1;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 
-void io_printf(OutputDevice out, const char *format, ...)
+HAL_StatusTypeDef io_printf(OutputDevice out, const char *format, ...)
 {
   va_list args;
 
@@ -28,20 +28,21 @@ void io_printf(OutputDevice out, const char *format, ...)
   switch (out)
   {
   case OUT_USB:
-    HAL_UART_Transmit(&huart2, (uint8_t*) buffer, strlen(buffer), HAL_MAX_DELAY);
-    break;
+    return HAL_UART_Transmit(&huart2, (uint8_t*) buffer, strlen(buffer),
+        HAL_MAX_DELAY);
   case OUT_XBee:
-    HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), HAL_MAX_DELAY);
-    break;
+    return HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer),
+        HAL_MAX_DELAY);
   case OUT_GPS:
     break;
   case OUT_CAN:
-    CAN_Transmit((uint8_t*) buffer, strlen(buffer));
-    break;
+    return CAN_Transmit((uint8_t*) buffer, strlen(buffer));
   }
+
+  return HAL_ERROR;
 }
 
-void CAN_Transmit(uint8_t *pTxData, size_t len)
+HAL_StatusTypeDef CAN_Transmit(uint8_t *pTxData, size_t len)
 {
   FDCAN_TxHeaderTypeDef pTxHeader; //declare a specific header for message transmissions
 
@@ -57,26 +58,34 @@ void CAN_Transmit(uint8_t *pTxData, size_t len)
 
   if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &pTxHeader, pTxData) != HAL_OK)
   {
-    Error_Handler();
+    return HAL_ERROR;
   }
 
-  while (HAL_FDCAN_IsTxBufferMessagePending(&hfdcan1, 0));
+  if (HAL_FDCAN_IsTxBufferMessagePending(&hfdcan1, 0))
+  {
+    return HAL_BUSY;
+  }
+
+  return HAL_OK;
 }
 
-uint8_t addNumberToJSON(cJSON *parentObject, const char *name, double value)
+HAL_StatusTypeDef addNumberToJSON(cJSON *parentObject, const char *name,
+    double value)
 {
   cJSON *item = cJSON_CreateNumber(value);
   if (item == NULL)
   {
-    return 1;
+    return HAL_ERROR;
   }
   cJSON_AddItemToObject(parentObject, name, item);
-  return 0;
+  return HAL_OK;
 }
 
-void encodeData(char *const buffer, size_t size, const int32_t speed,
+HAL_StatusTypeDef encodeData(char *const buffer, size_t size, const int32_t speed,
     const int32_t state_of_charge, const double latitude, const double longitude)
 {
+  HAL_StatusTypeDef status = HAL_ERROR;
+
   // Create JSON Object
   cJSON *dataObject = cJSON_CreateObject();
   if (dataObject == NULL)
@@ -112,10 +121,14 @@ void encodeData(char *const buffer, size_t size, const int32_t speed,
   if (!cJSON_PrintPreallocated(dataObject, buffer, size, (cJSON_bool) 0))
   {
     fprintf(stderr, "Failed to print speed.\n");
+    goto end;
   }
+
+  status = HAL_OK;
 
   // Delete object
   end: cJSON_Delete(dataObject);
+  return status;
 }
 
 int32_t decodeSpeed(const char *const json)

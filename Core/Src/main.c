@@ -129,7 +129,9 @@ int main(void)
     io_printf(OUT_USB, "%s\n", jsonBuffer);
 
     // Transmit test data on CAN
-    io_printf(OUT_CAN, "C\n");
+    if (io_printf(OUT_CAN, "C\n") != HAL_OK) {
+      io_printf(OUT_USB, "Failed to transmit CAN\n");
+    }
 
     // Flash LED
     HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);

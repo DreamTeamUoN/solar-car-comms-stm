@@ -9,9 +9,9 @@ typedef enum
   OUT_CAN
 } OutputDevice;
 
-void io_printf(OutputDevice out, const char *format, ...);
-void CAN_Transmit(uint8_t *buffer, size_t len);
-void encodeData(char *const buffer, size_t size, const int32_t speed,
+HAL_StatusTypeDef io_printf(OutputDevice out, const char *format, ...);
+HAL_StatusTypeDef CAN_Transmit(uint8_t *buffer, size_t len);
+HAL_StatusTypeDef encodeData(char *const buffer, size_t size, const int32_t speed,
     const int32_t state_of_charge, const double latitude, const double longitude);
 int32_t decodeSpeed(const char *const json);
 
