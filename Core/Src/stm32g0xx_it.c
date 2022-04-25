@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "util.h"
+#include "can_messages.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -208,9 +209,51 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
     {
       Error_Handler();
     }
-    // Ensure string is terminated
-    receivedData[pRxHeader.DataLength>>16] = '\0';
-    io_printf(OUT_USB, "%s", receivedData);
+    io_printf(OUT_USB, "New Message | ID:0x%X | ", pRxHeader.Identifier);
+
+    if (pRxHeader.Identifier == 0x118)
+    {
+      ECU_0x118 ecu_0x118;
+      ecu_0x118.raw[0] = receivedData[0];
+      ecu_0x118.raw[1] = receivedData[1];
+      io_printf(OUT_USB,
+          ecu_0x118.data.left_indicator_switch ?
+              "Left indicator on\n" : "Left indicator off\n");
+
+    }
+    else if (pRxHeader.Identifier == 0x6F4)
+    {
+      BMS_SOC_0x6F4 bms_soc;
+      bms_soc.raw[0] = ((float*) receivedData)[0];
+      bms_soc.raw[1] = ((float*) receivedData)[1];
+      io_printf(OUT_USB, "Battery percentage: %f \n", bms_soc.data.battery_soc);
+    }
+    else if (pRxHeader.Identifier == 0x423)
+    {
+      INVERTER_VELOCITY_0x423_0x443 left_inverter_velocity;
+      left_inverter_velocity.raw[0] = ((int32_t*) receivedData)[0];
+      left_inverter_velocity.raw[1] = ((int32_t*) receivedData)[1];
+      io_printf(OUT_USB, "Vehicle Velocity Left: %d \n",
+          left_inverter_velocity.data.vehicle_velocity);
+    }
+    else if (pRxHeader.Identifier == 0x443)
+    {
+      INVERTER_VELOCITY_0x423_0x443 right_inverter_velocity;
+      right_inverter_velocity.raw[0] = ((int32_t*) receivedData)[0];
+      right_inverter_velocity.raw[1] = ((int32_t*) receivedData)[1];
+      io_printf(OUT_USB, "Vehicle Velocity Right: %d \n",
+          right_inverter_velocity.data.vehicle_velocity);
+    }
+    else if (pRxHeader.Identifier == 0x244)
+    {
+      // Ensure string is terminated
+      receivedData[pRxHeader.DataLength >> 16] = '\0';
+      io_printf(OUT_USB, "%s", receivedData);
+    }
+    else
+    {
+      io_printf(OUT_USB, "Unknown message\n");
+    }
   }
 }
 

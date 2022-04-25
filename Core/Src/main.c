@@ -224,17 +224,47 @@ static void MX_FDCAN1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN FDCAN1_Init 2 */
-  FDCAN_FilterTypeDef sFilterConfig;
+  FDCAN_FilterTypeDef sFilter0Config;
 
   /* Configure Rx filter */
-  sFilterConfig.IdType = FDCAN_STANDARD_ID; // Using standard CAN IDs
-  sFilterConfig.FilterIndex = 0;  // Initialise filter 0
-  sFilterConfig.FilterType = FDCAN_FILTER_MASK; // Classic filter: FilterID1 = filter, FilterID2 = mask
-  sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0; // Store in Rx FIFO 0 if filter matches
-  sFilterConfig.FilterID1 = 0x244;  // ID Filter
-  sFilterConfig.FilterID2 = 0x0000; // Mask
+  sFilter0Config.IdType = FDCAN_STANDARD_ID; // Using standard CAN IDs
+  sFilter0Config.FilterIndex = 0;  // Initialise filter 0
+  sFilter0Config.FilterType = FDCAN_FILTER_DUAL;
+  sFilter0Config.FilterConfig = FDCAN_FILTER_TO_RXFIFO0; // Store in Rx FIFO 0 if filter matches
+  sFilter0Config.FilterID1 = 0x118;
+  sFilter0Config.FilterID2 = 0x6F4;
 
-  if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig) != HAL_OK)
+  if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilter0Config) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  FDCAN_FilterTypeDef sFilter1Config;
+
+  /* Configure Rx filter */
+  sFilter1Config.IdType = FDCAN_STANDARD_ID; // Using standard CAN IDs
+  sFilter1Config.FilterIndex = 1;  // Initialise filter 0
+  sFilter1Config.FilterType = FDCAN_FILTER_DUAL;
+  sFilter1Config.FilterConfig = FDCAN_FILTER_TO_RXFIFO0; // Store in Rx FIFO 0 if filter matches
+  sFilter1Config.FilterID1 = 0x423;
+  sFilter1Config.FilterID2 = 0x443;
+
+  if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilter1Config) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  FDCAN_FilterTypeDef sFilter2Config;
+
+  /* Configure Rx filter */
+  sFilter2Config.IdType = FDCAN_STANDARD_ID; // Using standard CAN IDs
+  sFilter2Config.FilterIndex = 2;  // Initialise filter 0
+  sFilter2Config.FilterType = FDCAN_FILTER_MASK;
+  sFilter2Config.FilterConfig = FDCAN_FILTER_TO_RXFIFO0; // Store in Rx FIFO 0 if filter matches
+  sFilter2Config.FilterID1 = 0x244;
+  sFilter2Config.FilterID2 = 0xFFFF;
+
+  if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilter2Config) != HAL_OK)
   {
     Error_Handler();
   }
