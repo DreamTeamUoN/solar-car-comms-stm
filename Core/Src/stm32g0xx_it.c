@@ -200,10 +200,12 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
   FDCAN_RxHeaderTypeDef pRxHeader;
   uint8_t receivedData[100];
 
-  if ((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != RESET) {
+  if ((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != RESET)
+  {
     /* Retrieve Rx messages from RX FIFO0 */
     if (HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &pRxHeader, receivedData)
-        != HAL_OK) {
+        != HAL_OK)
+    {
       Error_Handler();
     }
     // Ensure string is terminated
@@ -212,11 +214,13 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
   }
 }
 
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
-  if (huart->Instance == USART1) {
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+  if (huart->Instance == USART1)
+  {
 //    memcpy(uartRxBuf, uartRxDMABuf, Size); // Use this to first copy data to buffer (Safer, to prevent new data from overwriting with DMA)
     io_printf(OUT_USB, "Received with Idle! %s, %d", uartRxDMABuf,
-              decodeSpeed((char*) uartRxDMABuf));
+        decodeSpeed((char*) uartRxDMABuf));
 
     HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uartRxDMABuf, RxDMABuf_SIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
