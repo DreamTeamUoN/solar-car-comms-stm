@@ -111,7 +111,24 @@ int main(void)
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
 
-  int32_t uart_test_data = 1;
+  struct {
+    int32_t motor_angular_speed;
+    int32_t vehicle_velocity;
+  } left_velocities;
+
+  struct {
+    int32_t motor_angular_speed;
+    int32_t vehicle_velocity;
+  } right_velocities;
+
+
+   left_velocities.motor_angular_speed = 1;
+   left_velocities.vehicle_velocity = 26;
+
+   right_velocities.motor_angular_speed = 102;
+   right_velocities.vehicle_velocity = 150;
+
+  float soc_percentage = 100;
 
   HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
 
@@ -124,12 +141,15 @@ int main(void)
   char dataPointer[100];
   while (1)
   {
-	  encodeSpeed(uart_test_data, dataPointer, 100);
+	  encodeSpeed(left_velocities.vehicle_velocity, dataPointer, 100);
 
 	  io_printf(OUT_XBee, "%s\n", dataPointer);
 	  io_printf(OUT_USB, "%s\n", dataPointer);
 //	  io_printf(OUT_CAN, "Hello\n");
 //	  io_printf(OUT_CAN, "%d\n", uart_test_data);
+	  CAN_Transmit_ID(&soc_percentage, sizeof(float), 0x6F4);
+	  CAN_Transmit_ID(&left_velocities, sizeof(left_velocities), 0x423);
+	  CAN_Transmit_ID(&left_velocities, sizeof(right_velocities), 0x443);
 
 	  HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
 	  HAL_Delay(50);
@@ -142,7 +162,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  ++uart_test_data;
+	  ++left_velocities.motor_angular_speed;
+	  ++left_velocities.vehicle_velocity;
+	  soc_percentage -= 0.27;
   }
   /* USER CODE END 3 */
 }
