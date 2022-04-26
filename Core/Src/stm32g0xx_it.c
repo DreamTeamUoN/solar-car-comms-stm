@@ -60,6 +60,7 @@
 extern FDCAN_HandleTypeDef hfdcan1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart3;
 /* USER CODE BEGIN EV */
 extern uint8_t uartRxDMABuf[RxDMABuf_SIZE];
 /* USER CODE END EV */
@@ -184,6 +185,20 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   /* USER CODE END USART1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART3, USART4, USART5, USART6, LPUART1 globlal Interrupts (combined with EXTI 28).
+  */
+void USART3_4_5_6_LPUART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART3_4_5_6_LPUART1_IRQn 0 */
+
+  /* USER CODE END USART3_4_5_6_LPUART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart3);
+  /* USER CODE BEGIN USART3_4_5_6_LPUART1_IRQn 1 */
+
+  /* USER CODE END USART3_4_5_6_LPUART1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
