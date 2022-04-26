@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "util.h"
 #include "can_messages.h"
+#include "GPS.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -282,6 +283,14 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 
     HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uartRxDMABuf, RxDMABuf_SIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+  }
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART3)
+  {
+    GPS_CallBack();
   }
 }
 

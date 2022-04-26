@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "util.h"
+#include "GPS.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,6 +101,8 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  GPS_Init();
+
   // Start with LED on
   HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
 
@@ -114,8 +117,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    GPS_Process();
+
     // Place JSON data in buffer
-    encodeData(jsonBuffer, JSON_BUFFER_SIZE, 70, 95, latitude, 133.75981);
+    encodeData(jsonBuffer, JSON_BUFFER_SIZE, 70, 95, GPS.GNRMC);
 
     // TODO Make all transmission non-blocking
     // TODO Add parity to uart1

@@ -81,8 +81,20 @@ HAL_StatusTypeDef addNumberToJSON(cJSON *parentObject, const char *name,
   return HAL_OK;
 }
 
+HAL_StatusTypeDef addStringToJSON(cJSON *parentObject, const char *name,
+    const char * string)
+{
+  cJSON *item = cJSON_CreateString(string);
+  if (item == NULL)
+  {
+    return HAL_ERROR;
+  }
+  cJSON_AddItemToObject(parentObject, name, item);
+  return HAL_OK;
+}
+
 HAL_StatusTypeDef encodeData(char *const buffer, size_t size, const int32_t speed,
-    const int32_t state_of_charge, const double latitude, const double longitude)
+    const int32_t state_of_charge, const char* gnrmc)
 {
   HAL_StatusTypeDef status = HAL_ERROR;
 
@@ -105,14 +117,8 @@ HAL_StatusTypeDef encodeData(char *const buffer, size_t size, const int32_t spee
     goto end;
   }
 
-  // Add latitude
-  if (addNumberToJSON(dataObject, "latitude", latitude))
-  {
-    goto end;
-  }
-
-  // Add longitude
-  if (addNumberToJSON(dataObject, "longitude", longitude))
+  // Add GNMRC data
+  if (addStringToJSON(dataObject, "GNRMC", gnrmc))
   {
     goto end;
   }
