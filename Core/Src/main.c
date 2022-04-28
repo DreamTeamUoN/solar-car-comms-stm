@@ -49,7 +49,6 @@
 
 uint32_t uart_test_data = 1;
 char jsonBuffer[JSON_BUFFER_SIZE];
-uint8_t uartRxDMABuf[RxDMABuf_SIZE];
 
 double latitude = -21.37976;
 
@@ -94,9 +93,9 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_FDCAN1_Init();
   MX_USART1_UART_Init();
-  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
@@ -105,11 +104,6 @@ int main(void)
 
   // Start with LED on
   HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
-
-  // Begin receiving UART through DMA
-  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uartRxDMABuf, RxDMABuf_SIZE);
-  // Disable Half Transmission interrupt, not used
-  __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 
   /* USER CODE END 2 */
 

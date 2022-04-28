@@ -22,9 +22,7 @@
 #include "stm32g0xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "util.h"
-#include "can_messages.h"
-#include "GPS.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -63,7 +61,7 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
 /* USER CODE BEGIN EV */
-extern uint8_t uartRxDMABuf[RxDMABuf_SIZE];
+
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -203,27 +201,6 @@ void USART3_4_5_6_LPUART1_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
-{
-  if (huart->Instance == USART1)
-  {
-//    memcpy(uartRxBuf, uartRxDMABuf, Size); // Use this to first copy data to buffer (Safer, to prevent new data from overwriting with DMA)
-    io_printf(OUT_USB, "Received with Idle! %s, %d", uartRxDMABuf,
-        decodeSpeed((char*) uartRxDMABuf));
-
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uartRxDMABuf, RxDMABuf_SIZE);
-    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
-  }
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  if (huart->Instance == USART3)
-  {
-    GPS_CallBack();
-  }
-}
 
 /* USER CODE END 1 */
 

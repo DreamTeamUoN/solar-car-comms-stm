@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "util.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -72,7 +72,6 @@ void Error_Handler(void);
 #define CAN1_MCP_STBY_Pin GPIO_PIN_6
 #define CAN1_MCP_STBY_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
-#define RxDMABuf_SIZE 100
 #define JSON_BUFFER_SIZE 200
 /* USER CODE END Private defines */
 

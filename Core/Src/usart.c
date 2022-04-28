@@ -21,6 +21,13 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
+#include "util.h"
+#include "GPS.h"
+#include <string.h>
+
+uint8_t uart1RxDMABuf[RxDMABuf_SIZE];
+
+uint8_t uart1MainBuf[RxDMABuf_SIZE];
 
 /* USER CODE END 0 */
 
@@ -69,6 +76,13 @@ void MX_USART1_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
+
+//  HAL_UART_Receive_DMA(&huart1, uartRxDMABuf, RxDMABuf_SIZE);
+
+  // Begin receiving UART through DMA
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart1RxDMABuf, RxDMABuf_SIZE);
+  // Disable Half Transmission interrupt, not used
+  __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 
   /* USER CODE END USART1_Init 2 */
 
@@ -206,7 +220,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     hdma_usart1_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_usart1_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_usart1_rx.Init.Mode = DMA_NORMAL;
-    hdma_usart1_rx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_usart1_rx.Init.Priority = DMA_PRIORITY_HIGH;
     if (HAL_DMA_Init(&hdma_usart1_rx) != HAL_OK)
     {
       Error_Handler();
@@ -371,5 +385,43 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+  if (huart->Instance == USART1)
+  {
+    memcpy(uart1MainBuf, uart1RxDMABuf, Size); // Use this to first copy data to buffer (Safer, to prevent new data from overwriting with DMA)
+    io_printf(OUT_USB, "Received with Idle! %s, %d\r\n", uart1MainBuf,
+        decodeSpeed((char*) uart1MainBuf));
+
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart1RxDMABuf, RxDMABuf_SIZE);
+    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+  }
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART3)
+  {
+    GPS_CallBack();
+  }
+  else if (huart->Instance == USART1)
+  {
+    HAL_UART_Receive_DMA(&huart1, uart1RxDMABuf, RxDMABuf_SIZE);
+    io_printf(OUT_USB, "RxCPLT\r\n");
+  }
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART1)
+  {
+    io_printf(OUT_USB, "Error %d on UART1\r\n", huart1.ErrorCode);
+    __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);
+
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart1RxDMABuf, RxDMABuf_SIZE);
+    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+  }
+}
 
 /* USER CODE END 1 */
