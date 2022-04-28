@@ -1,7 +1,7 @@
 #ifndef _GPS_H_
 #define _GPS_H_
 
-#include <stdint.h>
+#include "main.h"
 
 #define GPS_USART    huart3
 #define GPS_DEBUG    0

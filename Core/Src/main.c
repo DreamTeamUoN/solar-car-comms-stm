@@ -25,8 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "util.h"
-#include "GPS.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,6 +101,7 @@ int main(void)
 
   GPS_Init();
   XBee_Init();
+  CAN_Messages_Init();
 
   // Start with LED on
   HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);

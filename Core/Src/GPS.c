@@ -1,10 +1,6 @@
 #include "GPS.h"
 #include "usart.h"
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include "util.h"
 
 GPS_t GPS;
 

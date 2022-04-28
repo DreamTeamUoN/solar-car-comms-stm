@@ -3,13 +3,10 @@
 #include <string.h>
 
 #include "main.h"
-#include "util.h"
+#include "usart.h"
+#include "fdcan.h"
 #include "cJSON.h"
 
-extern FDCAN_HandleTypeDef hfdcan1;
-
-extern UART_HandleTypeDef huart1;
-extern UART_HandleTypeDef huart2;
 
 HAL_StatusTypeDef io_printf(OutputDevice out, const char *format, ...)
 {

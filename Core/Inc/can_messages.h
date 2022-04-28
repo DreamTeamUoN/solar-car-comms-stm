@@ -51,4 +51,7 @@ typedef union
   } data;
 } ECU_0x118;
 
+void CAN_Messages_Init(void);
+void CAN_Messages_Callback(void);
+
 #endif /* INC_CAN_MESSAGES_H_ */

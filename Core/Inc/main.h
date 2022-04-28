@@ -32,6 +32,9 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "util.h"
+#include "GPS.h"
+#include "XBee.h"
+#include "can_messages.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

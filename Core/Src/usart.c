@@ -21,9 +21,6 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-#include "util.h"
-#include "GPS.h"
-#include "XBee.h"
 #include <string.h>
 
 #define USART1RxDMABuf_SIZE 100
