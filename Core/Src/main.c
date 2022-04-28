@@ -125,7 +125,7 @@ int main(void)
     // Transmit test data on CAN
     if (io_printf(OUT_CAN, "C\r\n") != HAL_OK)
     {
-      io_printf(OUT_USB, "Failed to transmit CAN\n");
+      io_printf(OUT_USB, "Failed to transmit CAN\r\n");
     }
 
     // Flash LED
