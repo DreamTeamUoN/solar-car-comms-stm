@@ -53,17 +53,20 @@ void CAN_Messages_Callback(void)
   {
     Error_Handler();
   }
+#if(_CAN_DEBUG==1)
   io_printf(OUT_USB, "New Message | ID:0x%X | ", pRxHeader.Identifier);
-
+#endif
   if (pRxHeader.Identifier == 0x118)
   {
     ECU_0x118 ecu_0x118;
     ecu_0x118.raw[0] = receivedData[0];
     ecu_0x118.raw[1] = receivedData[1];
+    UNUSED(ecu_0x118);
+#if(_CAN_DEBUG==1)
     io_printf(OUT_USB,
         ecu_0x118.data.left_indicator_switch ?
             "Left indicator on\n" : "Left indicator off\r\n");
-
+#endif
   }
   else if (pRxHeader.Identifier == 0x6F4)
   {
@@ -71,7 +74,9 @@ void CAN_Messages_Callback(void)
     bms_soc.raw[0] = ((float*) receivedData)[0];
     bms_soc.raw[1] = ((float*) receivedData)[1];
     updateSoC(bms_soc.data.battery_soc);
+#if(_CAN_DEBUG==1)
     io_printf(OUT_USB, "Battery percentage: %f \r\n", bms_soc.data.battery_soc);
+#endif
   }
   else if (pRxHeader.Identifier == 0x423)
   {
@@ -79,25 +84,34 @@ void CAN_Messages_Callback(void)
     left_inverter_velocity.raw[0] = ((int32_t*) receivedData)[0];
     left_inverter_velocity.raw[1] = ((int32_t*) receivedData)[1];
     updateSpeed(left_inverter_velocity.data.vehicle_velocity);
+#if(_CAN_DEBUG==1)
     io_printf(OUT_USB, "Vehicle Velocity Left: %d \r\n",
         left_inverter_velocity.data.vehicle_velocity);
+#endif
   }
   else if (pRxHeader.Identifier == 0x443)
   {
     INVERTER_VELOCITY_0x423_0x443 right_inverter_velocity;
     right_inverter_velocity.raw[0] = ((int32_t*) receivedData)[0];
     right_inverter_velocity.raw[1] = ((int32_t*) receivedData)[1];
+    UNUSED(right_inverter_velocity);
+#if(_CAN_DEBUG==1)
     io_printf(OUT_USB, "Vehicle Velocity Right: %d \r\n",
         right_inverter_velocity.data.vehicle_velocity);
+#endif
   }
   else if (pRxHeader.Identifier == 0x244)
   {
     // Ensure string is terminated
     receivedData[pRxHeader.DataLength >> 16] = '\0';
+#if(_CAN_DEBUG==1)
     io_printf(OUT_USB, "%s\r\n", receivedData);
+#endif
   }
   else
   {
+#if(_CAN_DEBUG==1)
     io_printf(OUT_USB, "Unknown message\r\n");
+#endif
   }
 }

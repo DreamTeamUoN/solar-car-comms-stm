@@ -30,6 +30,8 @@ extern "C" {
 
 /* USER CODE BEGIN Includes */
 
+#define _USART_DEBUG 0
+
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart1;

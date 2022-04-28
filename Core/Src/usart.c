@@ -409,7 +409,9 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   else if (huart->Instance == USART2)
   {
     memcpy(uart2MainBuf, uart2RxDMABuf, Size);
+#if(_USART_DEBUG==1)
     io_printf(OUT_USB, "Rec %s\r\n", uart2MainBuf);
+#endif
     HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2RxDMABuf, USART1RxDMABuf_SIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
   }
@@ -431,9 +433,9 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
   }
   else if (huart->Instance == USART2)
   {
+#if(_USART_DEBUG==1)
     io_printf(OUT_USB, "Error on UART2 %s\r\n", huart->ErrorCode);
-    __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);
-
+#endif
     HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2RxDMABuf, USART1RxDMABuf_SIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
   }

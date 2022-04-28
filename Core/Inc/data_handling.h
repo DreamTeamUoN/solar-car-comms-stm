@@ -8,6 +8,7 @@
 #ifndef INC_DATA_HANDLING_H_
 #define INC_DATA_HANDLING_H_
 
+#define _DATA_DEBUG 0
 #define JSON_BUFFER_SIZE 200
 
 #include <stdint.h>

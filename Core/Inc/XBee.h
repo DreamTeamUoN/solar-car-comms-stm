@@ -1,6 +1,8 @@
 #ifndef INC_XBEE_H_
 #define INC_XBEE_H_
 
+#define _XBEE_DEBUG 0
+
 #include "main.h"
 
 void XBee_Init(void);

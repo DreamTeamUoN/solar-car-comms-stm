@@ -8,6 +8,8 @@
 #ifndef INC_CAN_MESSAGES_H_
 #define INC_CAN_MESSAGES_H_
 
+#define _CAN_DEBUG 0
+
 typedef union
 {
   int32_t raw[2];
