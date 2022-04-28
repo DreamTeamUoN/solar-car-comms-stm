@@ -136,29 +136,29 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-//  io_printf(OUT_XBee, "%s\n", encodeSpeed(uart_test_data));
-//  io_printf(OUT_USB, "%s\n", encodeSpeed(uart_test_data));
+//  io_printf(OUT_XBee, "%s\r\n", encodeSpeed(uart_test_data));
+//  io_printf(OUT_USB, "%s\r\n", encodeSpeed(uart_test_data));
   char dataPointer[100];
   while (1)
   {
 	  encodeSpeed(left_velocities.vehicle_velocity, dataPointer, 100);
 
-	  io_printf(OUT_XBee, "%s\n", dataPointer);
-	  io_printf(OUT_USB, "%s\n", dataPointer);
-//	  io_printf(OUT_CAN, "Hello\n");
-//	  io_printf(OUT_CAN, "%d\n", uart_test_data);
-	  CAN_Transmit_ID(&soc_percentage, sizeof(float), 0x6F4);
-	  CAN_Transmit_ID(&left_velocities, sizeof(left_velocities), 0x423);
-	  CAN_Transmit_ID(&left_velocities, sizeof(right_velocities), 0x443);
+	  io_printf(OUT_XBee, "%s\r\n", dataPointer);
+	  io_printf(OUT_USB, "%s\r\n", dataPointer);
+//	  io_printf(OUT_CAN, "Hello\r\n");
+//	  io_printf(OUT_CAN, "%d\r\n", uart_test_data);
+	  CAN_Transmit_ID((uint8_t *) &soc_percentage, sizeof(float), 0x6F4);
+	  CAN_Transmit_ID((uint8_t *) &left_velocities, sizeof(left_velocities), 0x423);
+	  CAN_Transmit_ID((uint8_t *) &left_velocities, sizeof(right_velocities), 0x443);
 
 	  HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
 	  HAL_Delay(50);
 	  HAL_GPIO_TogglePin(LD_G_GPIO_Port, LD_G_Pin);
 	  HAL_Delay(50);
 
-	  io_printf(OUT_USB, "FIFO0: %d\n", HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0));
-	  io_printf(OUT_USB, "FIFO1: %d\n", HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO1));
-	  io_printf(OUT_USB, "Status: %d\n", HAL_CAN_GetState(&hcan1));
+	  io_printf(OUT_USB, "FIFO0: %d\r\n", HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0));
+	  io_printf(OUT_USB, "FIFO1: %d\r\n", HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO1));
+	  io_printf(OUT_USB, "Status: %d\r\n", HAL_CAN_GetState(&hcan1));
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

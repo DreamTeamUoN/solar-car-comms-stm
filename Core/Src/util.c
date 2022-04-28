@@ -73,7 +73,7 @@ void encodeSpeed (const int32_t speed, char * const buffer, int size){
 
 	if (!cJSON_PrintPreallocated(speedObject, buffer, size, (cJSON_bool)0))
 	{
-		fprintf(stderr, "Failed to print speed.\n");
+		fprintf(stderr, "Failed to print speed.\r\n");
 	}
 
 end:
