@@ -52,6 +52,21 @@ void Data_Handling_Process(void)
 
     DataIn.targetSpeed_Valid = false;
   }
+
+  if (DataIn.GPSSpeed_Valid)
+  {
+    io_printf(OUT_USB, "GPS Speed: %d\r\n", DataIn.GPSSpeed);
+
+    // Transmit GPS speed on CAN
+    // TODO Change ID, set to 0x423 for testing
+    if (CAN_Transmit_ID((uint8_t*) &DataIn.GPSSpeed, sizeof(DataIn.GPSSpeed), 0x423)
+        != HAL_OK)
+    {
+      io_printf(OUT_USB, "Failed to transmit CAN\r\n");
+    }
+
+    DataIn.GPSSpeed_Valid = false;
+  }
 }
 
 void updateSpeed(int32_t speed)
@@ -76,4 +91,10 @@ void updateTargetSpeed(int32_t targetSpeed)
 {
   DataIn.targetSpeed = targetSpeed;
   DataIn.targetSpeed_Valid = true;
+}
+
+void updateGPSSpeed(int32_t GPSSpeed)
+{
+  DataIn.GPSSpeed = GPSSpeed;
+  DataIn.GPSSpeed_Valid = true;
 }

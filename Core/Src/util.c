@@ -149,14 +149,35 @@ HAL_StatusTypeDef encodeData(char *const buffer, size_t size, DataOut_t *data)
   return status;
 }
 
-int32_t decodeTargetSpeed(const char *const json)
+HAL_StatusTypeDef decodeInputData(const char *const json, int32_t *target_speed,
+    int32_t *gps_speed)
 {
-  int32_t target_speed = 0;
-  cJSON *speedObject_json = cJSON_Parse(json);
-  const cJSON *value = cJSON_GetObjectItemCaseSensitive(speedObject_json,
-      "target_speed");
-  target_speed = value->valueint;
+  HAL_StatusTypeDef status = HAL_ERROR;
 
-  cJSON_Delete(speedObject_json);
-  return target_speed;
+  cJSON *dataObject_json = cJSON_Parse(json);
+  if (dataObject_json == NULL)
+  {
+    goto end;
+  }
+
+  const cJSON *targetSpeedValue = cJSON_GetObjectItemCaseSensitive(dataObject_json,
+      "target_speed");
+  if (targetSpeedValue == NULL)
+  {
+    goto end;
+  }
+  *target_speed = targetSpeedValue->valueint;
+
+  const cJSON *GPSSpeedValue = cJSON_GetObjectItemCaseSensitive(dataObject_json,
+      "gps_speed");
+  if (GPSSpeedValue == NULL)
+  {
+    goto end;
+  }
+  *gps_speed = GPSSpeedValue->valueint;
+
+  status = HAL_OK;
+
+  end: cJSON_Delete(dataObject_json);
+  return status;
 }

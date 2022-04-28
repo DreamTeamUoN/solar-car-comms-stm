@@ -27,8 +27,10 @@ typedef struct
 typedef struct
 {
   int32_t targetSpeed;
+  int32_t GPSSpeed;
 
   bool targetSpeed_Valid;
+  bool GPSSpeed_Valid;
 } DataIn_t;
 
 extern DataOut_t DataOut;
@@ -43,5 +45,6 @@ void updateSoC(float SoC);
 void updateGNRMC(char *gnrmc);
 
 void updateTargetSpeed(int32_t targetSpeed);
+void updateGPSSpeed(int32_t GPSSpeed);
 
 #endif /* INC_DATA_HANDLING_H_ */

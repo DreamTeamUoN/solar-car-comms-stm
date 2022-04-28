@@ -19,8 +19,14 @@ void XBee_Callback(uint16_t Size)
 {
   memcpy(uart1MainBuf, uart1RxDMABuf, Size); // Use this to first copy data to buffer (Safer, to prevent new data from overwriting with DMA)
 
-  int32_t targetSpeed = decodeTargetSpeed((char*) uart1MainBuf);
-  updateTargetSpeed(targetSpeed);
+  int32_t targetSpeed, gpsSpeed;
+
+  if (decodeInputData((char*) uart1MainBuf, &targetSpeed, &gpsSpeed) == HAL_OK)
+  {
+    updateTargetSpeed(targetSpeed);
+    updateGPSSpeed(gpsSpeed);
+  }
+
   io_printf(OUT_USB, "Received with Idle! %s\r\n", uart1MainBuf);
 
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart1RxDMABuf, USART1RxDMABuf_SIZE);
