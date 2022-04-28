@@ -26,8 +26,10 @@
 #include <string.h>
 
 uint8_t uart1RxDMABuf[RxDMABuf_SIZE];
+uint8_t uart2RxDMABuf[RxDMABuf_SIZE];
 
 uint8_t uart1MainBuf[RxDMABuf_SIZE];
+uint8_t uart2MainBuf[RxDMABuf_SIZE];
 
 /* USER CODE END 0 */
 
@@ -35,6 +37,7 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_usart1_rx;
+DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USART1 init function */
 
@@ -127,7 +130,8 @@ void MX_USART2_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART2_Init 2 */
-
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2RxDMABuf, RxDMABuf_SIZE);
+  __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
   /* USER CODE END USART2_Init 2 */
 
 }
@@ -265,6 +269,24 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Alternate = GPIO_AF1_USART2;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* USART2 DMA Init */
+    /* USART2_RX Init */
+    hdma_usart2_rx.Instance = DMA2_Channel1;
+    hdma_usart2_rx.Init.Request = DMA_REQUEST_USART2_RX;
+    hdma_usart2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_usart2_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_usart2_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_usart2_rx.Init.Mode = DMA_NORMAL;
+    hdma_usart2_rx.Init.Priority = DMA_PRIORITY_MEDIUM;
+    if (HAL_DMA_Init(&hdma_usart2_rx) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart2_rx);
+
   /* USER CODE BEGIN USART2_MspInit 1 */
 
   /* USER CODE END USART2_MspInit 1 */
@@ -356,6 +378,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     */
     HAL_GPIO_DeInit(GPIOA, USART2_TX_Pin|USART2_RX_Pin);
 
+    /* USART2 DMA DeInit */
+    HAL_DMA_DeInit(uartHandle->hdmarx);
   /* USER CODE BEGIN USART2_MspDeInit 1 */
 
   /* USER CODE END USART2_MspDeInit 1 */
@@ -397,6 +421,13 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart1RxDMABuf, RxDMABuf_SIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
   }
+  else if (huart->Instance == USART2)
+  {
+    memcpy(uart2MainBuf, uart2RxDMABuf, Size);
+    io_printf(OUT_USB, "Rec %s\r\n", uart2MainBuf);
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2RxDMABuf, RxDMABuf_SIZE);
+    __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+  }
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -421,6 +452,14 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 
     HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart1RxDMABuf, RxDMABuf_SIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+  }
+  else if (huart->Instance == USART2)
+  {
+    io_printf(OUT_USB, "Error on UART2 %s\r\n", huart->ErrorCode);
+    __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);
+
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2RxDMABuf, RxDMABuf_SIZE);
+    __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
   }
 }
 
