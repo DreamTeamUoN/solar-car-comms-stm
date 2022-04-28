@@ -20,7 +20,7 @@ typedef struct
 extern GPS_t GPS;
 
 void GPS_Init(void);
-void GPS_CallBack(void);
+void GPS_Callback(void);
 void GPS_Process(void);
 
 #endif

@@ -101,6 +101,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   GPS_Init();
+  XBee_Init();
 
   // Start with LED on
   HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);

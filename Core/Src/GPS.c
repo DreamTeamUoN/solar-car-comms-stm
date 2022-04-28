@@ -14,7 +14,7 @@ void GPS_Init(void)
   HAL_UART_Receive_IT(&GPS_USART, &GPS.rxTmp, 1);
 }
 
-void GPS_CallBack(void)
+void GPS_Callback(void)
 {
   GPS.LastTime = HAL_GetTick();
   if (GPS.rxIndex < sizeof(GPS.rxBuffer) - 2)

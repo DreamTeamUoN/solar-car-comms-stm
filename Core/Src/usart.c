@@ -23,13 +23,13 @@
 /* USER CODE BEGIN 0 */
 #include "util.h"
 #include "GPS.h"
+#include "XBee.h"
 #include <string.h>
 
-uint8_t uart1RxDMABuf[RxDMABuf_SIZE];
-uint8_t uart2RxDMABuf[RxDMABuf_SIZE];
+#define USART1RxDMABuf_SIZE 100
 
-uint8_t uart1MainBuf[RxDMABuf_SIZE];
-uint8_t uart2MainBuf[RxDMABuf_SIZE];
+uint8_t uart2RxDMABuf[USART1RxDMABuf_SIZE];
+uint8_t uart2MainBuf[USART1RxDMABuf_SIZE];
 
 /* USER CODE END 0 */
 
@@ -80,13 +80,6 @@ void MX_USART1_UART_Init(void)
   }
   /* USER CODE BEGIN USART1_Init 2 */
 
-//  HAL_UART_Receive_DMA(&huart1, uartRxDMABuf, RxDMABuf_SIZE);
-
-  // Begin receiving UART through DMA
-  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart1RxDMABuf, RxDMABuf_SIZE);
-  // Disable Half Transmission interrupt, not used
-  __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
-
   /* USER CODE END USART1_Init 2 */
 
 }
@@ -130,7 +123,7 @@ void MX_USART2_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART2_Init 2 */
-  HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2RxDMABuf, RxDMABuf_SIZE);
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2RxDMABuf, USART1RxDMABuf_SIZE);
   __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
   /* USER CODE END USART2_Init 2 */
 
@@ -414,18 +407,13 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
   if (huart->Instance == USART1)
   {
-    memcpy(uart1MainBuf, uart1RxDMABuf, Size); // Use this to first copy data to buffer (Safer, to prevent new data from overwriting with DMA)
-    io_printf(OUT_USB, "Received with Idle! %s, %d\r\n", uart1MainBuf,
-        decodeSpeed((char*) uart1MainBuf));
-
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart1RxDMABuf, RxDMABuf_SIZE);
-    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+    XBee_Callback(Size);
   }
   else if (huart->Instance == USART2)
   {
     memcpy(uart2MainBuf, uart2RxDMABuf, Size);
     io_printf(OUT_USB, "Rec %s\r\n", uart2MainBuf);
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2RxDMABuf, RxDMABuf_SIZE);
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2RxDMABuf, USART1RxDMABuf_SIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
   }
 }
@@ -434,7 +422,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   if (huart->Instance == USART3)
   {
-    GPS_CallBack();
+    GPS_Callback();
   }
 }
 
@@ -442,18 +430,14 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
   if (huart->Instance == USART1)
   {
-    io_printf(OUT_USB, "Error %d on UART1\r\n", huart1.ErrorCode);
-    __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);
-
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart1RxDMABuf, RxDMABuf_SIZE);
-    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+    XBee_ErrorCallback();
   }
   else if (huart->Instance == USART2)
   {
     io_printf(OUT_USB, "Error on UART2 %s\r\n", huart->ErrorCode);
     __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);
 
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2RxDMABuf, RxDMABuf_SIZE);
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2RxDMABuf, USART1RxDMABuf_SIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
   }
 }
