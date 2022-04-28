@@ -70,6 +70,7 @@ void CAN_Messages_Callback(void)
     BMS_SOC_0x6F4 bms_soc;
     bms_soc.raw[0] = ((float*) receivedData)[0];
     bms_soc.raw[1] = ((float*) receivedData)[1];
+    updateSoC(bms_soc.data.battery_soc);
     io_printf(OUT_USB, "Battery percentage: %f \r\n", bms_soc.data.battery_soc);
   }
   else if (pRxHeader.Identifier == 0x423)
@@ -77,6 +78,7 @@ void CAN_Messages_Callback(void)
     INVERTER_VELOCITY_0x423_0x443 left_inverter_velocity;
     left_inverter_velocity.raw[0] = ((int32_t*) receivedData)[0];
     left_inverter_velocity.raw[1] = ((int32_t*) receivedData)[1];
+    updateSpeed(left_inverter_velocity.data.vehicle_velocity);
     io_printf(OUT_USB, "Vehicle Velocity Left: %d \r\n",
         left_inverter_velocity.data.vehicle_velocity);
   }

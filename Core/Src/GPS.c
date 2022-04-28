@@ -37,6 +37,7 @@ void GPS_Process(void)
     {
       *(strchr(str, '\r')) = '\0';
       strcpy(GPS.GNRMC, str);
+      updateGNRMC(GPS.GNRMC);
     }
     memset(GPS.rxBuffer, 0, sizeof(GPS.rxBuffer));
     GPS.rxIndex = 0;

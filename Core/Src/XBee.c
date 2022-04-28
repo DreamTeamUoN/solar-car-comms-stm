@@ -18,8 +18,10 @@ void XBee_Init(void)
 void XBee_Callback(uint16_t Size)
 {
   memcpy(uart1MainBuf, uart1RxDMABuf, Size); // Use this to first copy data to buffer (Safer, to prevent new data from overwriting with DMA)
-  io_printf(OUT_USB, "Received with Idle! %s, %d\r\n", uart1MainBuf,
-      decodeSpeed((char*) uart1MainBuf));
+
+  int32_t targetSpeed = decodeTargetSpeed((char*) uart1MainBuf);
+  updateTargetSpeed(targetSpeed);
+  io_printf(OUT_USB, "Received with Idle! %s\r\n", uart1MainBuf);
 
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart1RxDMABuf, USART1RxDMABuf_SIZE);
   __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
@@ -27,6 +29,7 @@ void XBee_Callback(uint16_t Size)
 
 void XBee_ErrorCallback(void)
 {
+  // TODO Handle HAL_UART_ERROR_FE Frame Error
   io_printf(OUT_USB, "Error %d on UART1\r\n", huart1.ErrorCode);
   __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);
 

@@ -7,7 +7,6 @@
 #include "fdcan.h"
 #include "cJSON.h"
 
-
 HAL_StatusTypeDef io_printf(OutputDevice out, const char *format, ...)
 {
   va_list args;
@@ -26,10 +25,10 @@ HAL_StatusTypeDef io_printf(OutputDevice out, const char *format, ...)
   {
   case OUT_USB:
     return HAL_UART_Transmit(&huart2, (uint8_t*) buffer, strlen(buffer),
-        HAL_MAX_DELAY);
+    HAL_MAX_DELAY);
   case OUT_XBee:
     return HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer),
-        HAL_MAX_DELAY);
+    HAL_MAX_DELAY);
   case OUT_GPS:
     break;
   case OUT_CAN:
@@ -41,10 +40,15 @@ HAL_StatusTypeDef io_printf(OutputDevice out, const char *format, ...)
 
 HAL_StatusTypeDef CAN_Transmit(uint8_t *pTxData, size_t len)
 {
+  return CAN_Transmit_ID(pTxData, len, 0x244);
+}
+
+HAL_StatusTypeDef CAN_Transmit_ID(uint8_t *pTxData, size_t len, uint32_t StdId)
+{
   FDCAN_TxHeaderTypeDef pTxHeader; //declare a specific header for message transmissions
 
   pTxHeader.IdType = FDCAN_STANDARD_ID; //set identifier to standard
-  pTxHeader.Identifier = 0x256; //define a standard identifier, used for message identification by filters (switch this for the other microcontroller)
+  pTxHeader.Identifier = StdId;
   pTxHeader.TxFrameType = FDCAN_DATA_FRAME; //set data type to data, rather than remote transmission request
   pTxHeader.DataLength = len << 16; // TODO
   pTxHeader.ErrorStateIndicator = FDCAN_ESI_PASSIVE;
@@ -79,7 +83,7 @@ HAL_StatusTypeDef addNumberToJSON(cJSON *parentObject, const char *name,
 }
 
 HAL_StatusTypeDef addStringToJSON(cJSON *parentObject, const char *name,
-    const char * string)
+    const char *string)
 {
   cJSON *item = cJSON_CreateString(string);
   if (item == NULL)
@@ -90,57 +94,69 @@ HAL_StatusTypeDef addStringToJSON(cJSON *parentObject, const char *name,
   return HAL_OK;
 }
 
-HAL_StatusTypeDef encodeData(char *const buffer, size_t size, const int32_t speed,
-    const int32_t state_of_charge, const char* gnrmc)
+HAL_StatusTypeDef encodeData(char *const buffer, size_t size, DataOut_t *data)
 {
   HAL_StatusTypeDef status = HAL_ERROR;
 
-  // Create JSON Object
+// Create JSON Object
   cJSON *dataObject = cJSON_CreateObject();
   if (dataObject == NULL)
   {
     goto end;
   }
 
-  // Add speed
-  if (addNumberToJSON(dataObject, "speed", speed))
+  if (data->speed_Valid)
   {
-    goto end;
+    // Add speed
+    if (addNumberToJSON(dataObject, "speed", data->speed))
+    {
+      goto end;
+    }
   }
 
-  // Add test
-  if (addNumberToJSON(dataObject, "SoC", state_of_charge))
+  if (data->SoC_Valid)
   {
-    goto end;
+    // Add test
+    if (addNumberToJSON(dataObject, "SoC", data->SoC))
+    {
+      goto end;
+    }
   }
 
-  // Add GNMRC data
-  if (addStringToJSON(dataObject, "GNRMC", gnrmc))
+  if (data->GNMRC_Valid)
   {
-    goto end;
+    // Add GNMRC data
+    if (addStringToJSON(dataObject, "GNRMC", data->GNRMC))
+    {
+      goto end;
+    }
   }
 
-  // Print to string
-  if (!cJSON_PrintPreallocated(dataObject, buffer, size, (cJSON_bool) 0))
+  if (dataObject->child != NULL)
   {
-    fprintf(stderr, "Failed to print speed.\r\n");
-    goto end;
+    // Print to string
+    if (!cJSON_PrintPreallocated(dataObject, buffer, size, (cJSON_bool) 0))
+    {
+      fprintf(stderr, "Failed to print speed.\r\n");
+      goto end;
+    }
+
+    status = HAL_OK;
   }
 
-  status = HAL_OK;
-
-  // Delete object
+// Delete object
   end: cJSON_Delete(dataObject);
   return status;
 }
 
-int32_t decodeSpeed(const char *const json)
+int32_t decodeTargetSpeed(const char *const json)
 {
-  int32_t speed = 0;
+  int32_t target_speed = 0;
   cJSON *speedObject_json = cJSON_Parse(json);
-  const cJSON *value = cJSON_GetObjectItemCaseSensitive(speedObject_json, "target");
-  speed = value->valueint;
+  const cJSON *value = cJSON_GetObjectItemCaseSensitive(speedObject_json,
+      "target_speed");
+  target_speed = value->valueint;
 
   cJSON_Delete(speedObject_json);
-  return speed;
+  return target_speed;
 }

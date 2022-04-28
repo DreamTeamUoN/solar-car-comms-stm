@@ -35,6 +35,7 @@ extern "C" {
 #include "GPS.h"
 #include "XBee.h"
 #include "can_messages.h"
+#include "data_handling.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -75,7 +76,7 @@ void Error_Handler(void);
 #define CAN1_MCP_STBY_Pin GPIO_PIN_6
 #define CAN1_MCP_STBY_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
-#define JSON_BUFFER_SIZE 200
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -46,11 +46,6 @@
 
 /* USER CODE BEGIN PV */
 
-uint32_t uart_test_data = 1;
-char jsonBuffer[JSON_BUFFER_SIZE];
-
-double latitude = -21.37976;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -102,6 +97,7 @@ int main(void)
   GPS_Init();
   XBee_Init();
   CAN_Messages_Init();
+  Data_Handling_Init();
 
   // Start with LED on
   HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
@@ -113,32 +109,17 @@ int main(void)
   while (1)
   {
     GPS_Process();
-
-    // Place JSON data in buffer
-    encodeData(jsonBuffer, JSON_BUFFER_SIZE, 70, 95, GPS.GNRMC);
-
-    // TODO Make all transmission non-blocking
-    // TODO Add parity to uart1
-    // Transmit JSON data
-    io_printf(OUT_XBee, "%s\r\n", jsonBuffer);
-    io_printf(OUT_USB, "%s\r\n", jsonBuffer);
-
-    // Transmit test data on CAN
-    if (io_printf(OUT_CAN, "C\r\n") != HAL_OK)
-    {
-      io_printf(OUT_USB, "Failed to transmit CAN\r\n");
-    }
+    Data_Handling_Process();
 
     // Flash LED
     HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
     HAL_Delay(100);
     HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
     HAL_Delay(100);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    ++uart_test_data;
-    latitude -= 0.00001;
   }
   /* USER CODE END 3 */
 }
