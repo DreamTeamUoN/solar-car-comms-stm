@@ -40,7 +40,7 @@ extern UART_HandleTypeDef huart3;
 
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
-#define RxDMABuf_SIZE 10
+#define RxDMABuf_SIZE 100
 
 /* USER CODE END Private defines */
 
