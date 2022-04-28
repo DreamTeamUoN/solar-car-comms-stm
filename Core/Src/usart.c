@@ -436,11 +436,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   {
     GPS_CallBack();
   }
-  else if (huart->Instance == USART1)
-  {
-    HAL_UART_Receive_DMA(&huart1, uart1RxDMABuf, RxDMABuf_SIZE);
-    io_printf(OUT_USB, "RxCPLT\r\n");
-  }
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)

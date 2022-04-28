@@ -31,8 +31,8 @@ void GPS_Process(void)
   {
     char *str;
 #if (_GPS_DEBUG==1)
-		io_printf(OUT_USB, "GPS Debug\n");
-		io_printf(OUT_USB, "%s\n",GPS.rxBuffer);
+		io_printf(OUT_USB, "GPS Debug\r\n");
+		io_printf(OUT_USB, "%s\r\n",GPS.rxBuffer);
 #endif
     // Store pointer to beginning of GNRMC
 		str = strstr((char*) GPS.rxBuffer, "$GNRMC,");

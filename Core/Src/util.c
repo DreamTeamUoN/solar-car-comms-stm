@@ -126,7 +126,7 @@ HAL_StatusTypeDef encodeData(char *const buffer, size_t size, const int32_t spee
   // Print to string
   if (!cJSON_PrintPreallocated(dataObject, buffer, size, (cJSON_bool) 0))
   {
-    fprintf(stderr, "Failed to print speed.\n");
+    fprintf(stderr, "Failed to print speed.\r\n");
     goto end;
   }
 

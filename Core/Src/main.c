@@ -119,11 +119,11 @@ int main(void)
     // TODO Make all transmission non-blocking
     // TODO Add parity to uart1
     // Transmit JSON data
-    io_printf(OUT_XBee, "%s\n", jsonBuffer);
-    io_printf(OUT_USB, "%s\n", jsonBuffer);
+    io_printf(OUT_XBee, "%s\r\n", jsonBuffer);
+    io_printf(OUT_USB, "%s\r\n", jsonBuffer);
 
     // Transmit test data on CAN
-    if (io_printf(OUT_CAN, "C\n") != HAL_OK)
+    if (io_printf(OUT_CAN, "C\r\n") != HAL_OK)
     {
       io_printf(OUT_USB, "Failed to transmit CAN\n");
     }
